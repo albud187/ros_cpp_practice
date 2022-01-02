@@ -145,9 +145,6 @@ target_link_libraries(robot_driver ${catkin_LIBRARIES})
 add_executable(pose_reporter src/pose_reporter.cpp)
 target_link_libraries(pose_reporter ${catkin_LIBRARIES})
 
-add_executable(target_listener src/target_listener.cpp)
-target_link_libraries(target_listener ${catkin_LIBRARIES})
-
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use

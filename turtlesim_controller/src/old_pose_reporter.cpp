@@ -1,59 +1,89 @@
-#include "ros/ros.h"
-#include "geometry_msgs/Twist.h"
-#include "turtlesim/Pose.h"
-#include <sstream>
+#include <cstdlib> // Use for the absolute value method abs()
 #include <iostream> // Enables command line input and output
+#include <math.h>
+#include "ros/ros.h" // Necessary header files for ROS
+#include "geometry_msgs/Twist.h" // Twist messages (linear & angular velocity)
+#include "geometry_msgs/Pose2D.h" // x, y position and theta orientation
+#include <std_msgs/Int64.h>
+
+#include "turtlesim/Pose.h" // x, y, theta, linear & angular velocity
+
+// Remove the need to use std:: prefix
 using namespace std;
 
-ros::Subscriber pose_subscriber;	// to determine the position for turning the robot in an absolute orientation --> in the setDesiredOrientation fn
-turtlesim::Pose turtlesim_pose;
-
-const double PI = 3.14159265359;
-
-void poseCallback(const turtlesim::Pose::ConstPtr& pose_message);	//Callback fn everytime the turtle pose msg is published over the /turtle1/pose topic.
-void display_pos();
+geometry_msgs::Pose2D current_pose; // Current x, y, and theta
+turtlesim::Pose destination; //destination
+turtlesim::Pose pose_diff; // difference pose
+std_msgs::Int64 dest_count;
 
 
-int main(int argc, char **argv)
-{
-	ros::init(argc, argv, "pose_reporter");
-	ros::NodeHandle nh;
+// This callback function updates the current position and
+// orientation of the robot.
 
-	pose_subscriber = nh.subscribe("/turtle1/pose", 10, poseCallback);	//call poseCallback everytime the turtle pose msg is published over the /turtle1/pose topic.
-	ros::Rate rate(10);
-
-  while(ros::ok()){
-    display_pos();
-    rate.sleep();
-  }
-
-	ros::spin();
-
-	return 0;
+void updatePose(const turtlesim::PoseConstPtr &msg) {
+  current_pose.x = msg->x;
+  current_pose.y = msg->y;
+  current_pose.theta = msg->theta;
 }
 
-void poseCallback(const turtlesim::Pose::ConstPtr& pose_message){
-  ROS_INFO("%f", pose_message->x);
-	turtlesim_pose.x=pose_message->x;
-	turtlesim_pose.y=pose_message->y;
-	turtlesim_pose.theta=pose_message->theta;
+void saveDestination(const turtlesim::PoseConstPtr &msg){
+  destination.x = msg ->x;
+  destination.y = msg ->y;
 
 }
 
-// void poseCallback(const turtlesim::Pose::ConstPtr &pose_msg) {
-//     // same as...: turtle_pose.theta = pose_msg->theta; /*and so on for other vars*/
-//     turtlesim_pose = *pose_msg;
-// }
+void calculatePoseDiff(){
+  pose_diff.x = destination.x - current_pose.x;
+  pose_diff.y = destination.y - current_pose.y;
+  float target_angle = atan2(pose_diff.y, pose_diff.x);
+  pose_diff.theta = target_angle - current_pose.theta;
+
+}
+
+void updateTargetCount(const std_msgs::Int64ConstPtr &msg){
+  dest_count.data = msg -> data;
+}
 
 void display_pos(){
-  float xpos = turtlesim_pose.x;
-  float ypos = turtlesim_pose.y;
-  float theta =  turtlesim_pose.theta;
+  // cout << "Current x = " << current_pose.x << endl
+  //      << "Current y = " << current_pose.y <<  endl
+  //      << "Current theta = " << current_pose.theta << endl
+  //      << endl;
+  cout << current_pose<<endl;
+}
 
 
-  ROS_INFO("%f", xpos);
-  ROS_INFO("%f", ypos);
-  ROS_INFO("%f", theta);
-  printf("\n");
+int main(int argc, char **argv) {
 
+  // Initiate ROS
+  ros::init(argc, argv, "pose_reporter");
+
+  // Create the main access point to communicate with ROS
+  ros::NodeHandle nh;
+  ros::Subscriber currentPoseSub = nh.subscribe("turtle1/pose", 10, updatePose);
+  ros::Subscriber destinationSub = nh.subscribe("/turtle1/destination", 10, saveDestination);
+  ros::Subscriber destCountSub = nh.subscribe("/turtle1/target_count", 10, updateTargetCount);
+  ros::Publisher poseDiffPub = nh.advertise<turtlesim::Pose>("turtle1/pose_diff",10);
+
+  ros::Rate loop_rate(10);
+
+  while (ros::ok()) {
+
+    ros::spinOnce();
+    calculatePoseDiff();
+    poseDiffPub.publish(pose_diff);
+
+    display_pos();
+
+    // if (dest_count > 0){
+    //
+    // }
+
+
+
+
+    loop_rate.sleep();
+  }
+
+  return 0;
 }
