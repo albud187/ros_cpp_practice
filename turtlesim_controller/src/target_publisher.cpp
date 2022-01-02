@@ -35,19 +35,20 @@ int main (int argc, char **argv)
   ros::Rate rate(10);
 
   while(ros::ok()){
-    // float input_destination[2];
-    // cout << "enter a destination (x,y): "<<endl;
-    // for (int x = 0; x <2; x++){
-    //   cin >> input_destination[x];
-    // }
-    // dest_count.data+=1;
-    //
-    // destination.x = input_destination[0];
-    // destination.y = input_destination[1];
-    // destinationPub.publish(destination);
-    // counterPub.publish(dest_count);
-    destination.x = 5;
-    destination.y = 7;
+    ros::spinOnce();
+    float input_destination[2];
+    cout << "enter a destination (x,y): "<<endl;
+    for (int x = 0; x <2; x++){
+      cin >> input_destination[x];
+    }
+    dest_count.data+=1;
+
+    destination.x = input_destination[0];
+    destination.y = input_destination[1];
+    destinationPub.publish(destination);
+    counterPub.publish(dest_count);
+    // destination.x = 4;
+    // destination.y = 2;
     destinationPub.publish(destination);
 
 
