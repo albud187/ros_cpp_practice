@@ -13,8 +13,8 @@
 using namespace std;
 
 //global variables
-turtlesim::Pose destination;
 turtlesim::Pose current_pose;
+turtlesim::Pose destination;
 turtlesim::Pose delta_pose;
 std_msgs::Int64 counter;
 
@@ -54,13 +54,13 @@ int main (int argc, char **argv)
   while(ros::ok()){
     ros::spinOnce();
     get_delta_pose();
-    display_info();
-    rate.sleep();
 
     if (counter.data>0){
       deltaPosePub.publish(delta_pose);
     }
 
+    display_info();
+    rate.sleep();
   }
 
   return 0;
