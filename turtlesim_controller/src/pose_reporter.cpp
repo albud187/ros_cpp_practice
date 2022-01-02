@@ -45,10 +45,11 @@ void updateTargetCount(const std_msgs::Int64ConstPtr &msg){
 }
 
 void display_pos(){
-  cout << "Current x = " << current_pose.x << endl
-       << "Current y = " << current_pose.y <<  endl
-       << "Current theta = " << current_pose.theta << endl
-       << endl;
+  // cout << "Current x = " << current_pose.x << endl
+  //      << "Current y = " << current_pose.y <<  endl
+  //      << "Current theta = " << current_pose.theta << endl
+  //      << endl;
+  cout << current_pose<<endl;
 }
 
 

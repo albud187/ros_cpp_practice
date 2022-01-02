@@ -1,61 +1,58 @@
+//libraries
 #include <ros/ros.h>
+#include <iostream>
+#include <algorithm>
+
+//msgs
 #include <std_msgs/String.h>
 #include <std_msgs/Int64.h>
 #include <geometry_msgs/Twist.h>
 #include <turtlesim/Pose.h>
-#include <iostream>
-#include <algorithm>
 
 using namespace std;
 
-int counter = 0;
-
+//global variables
 turtlesim::Pose destination;
 std_msgs::Int64 dest_count;
 
+//publishers
+ros::Publisher destinationPub;
+ros::Publisher counterPub;
+
+//subscribers
+ros::Subscriber destinationSubscriber;
+ros::Subscriber counterSubscriber;
+
+//callback functions
 
 int main (int argc, char **argv)
 {
   ros::init(argc, argv, "target_publisher");
-  // ros::NodeHandle nh;
+  ros::NodeHandle nh;
+  destinationPub = nh.advertise<turtlesim::Pose>("/turtle1/destination", 1000);
+  counterPub = nh.advertise<std_msgs::Int64>("/turtle1/counter", 1000);
 
-  ros::Publisher pub = nh.advertise<turtlesim::Pose>("/turtle1/destination", 10);
-  ros::Publisher counterpub = nh.advertise<std_msgs::Int64>("/turtle1/target_count", 10);
-  // ros::Rate rate(10);
+  ros::Rate rate(10);
 
   while(ros::ok()){
-    ros::Subscriber destinationSub = nh.subscribe("/turtle1/destination", 10, dest_subpub);
-    ros::Subscriber destinationCountSubPub = nh.subscribe("/turtle1/target_count", 10, dest_count_subpub);
+    // float input_destination[2];
+    // cout << "enter a destination (x,y): "<<endl;
+    // for (int x = 0; x <2; x++){
+    //   cin >> input_destination[x];
+    // }
+    // dest_count.data+=1;
+    //
+    // destination.x = input_destination[0];
+    // destination.y = input_destination[1];
+    // destinationPub.publish(destination);
+    // counterPub.publish(dest_count);
+    destination.x = 5;
+    destination.y = 7;
+    destinationPub.publish(destination);
 
-    float input_destination[2];
-    cout << "enter a destination (x,y): "<<endl;
-    for (int x = 0; x <2; x++){
-      cin >> input_destination[x];
-    }
-    dest_count.data += 1;
-
-    destination.x = input_destination[0];
-    destination.y = input_destination[1];
-    pub.publish(destination);
-    counter +=1;
-    dest_count.data = counter;
-
-    counterpub.publish(dest_count);
 
     rate.sleep();
   }
 
-
-}
-
-void dest_subpub(turtlesim::Pose dest_msg){
-  ros::Publisher pub = nh.advertise<turtlesim::Pose>("/turtle1/destination", 10);
-  pub.publish(destination);
-  rate.sleep();
-}
-
-void dest_count_subpub(std_msgs::Int64 dest_count_msg){
-  ros::Publisher counterpub = nh.advertise<std_msgs::Int64>("/turtle1/target_count", 10);
-  counterpub.publish(dest_count);
-  rate.sleep();
+  return 0;
 }
