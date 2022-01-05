@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(turtlebot_controller)
+project(ros_oop)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -102,7 +102,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES turtlebot_controller
+#  LIBRARIES ros_oop
 #  CATKIN_DEPENDS roscpp
 #  DEPENDS system_lib
 )
@@ -120,7 +120,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/turtlebot_controller.cpp
+#   src/${PROJECT_NAME}/ros_oop.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -131,10 +131,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/turtlebot_controller_node.cpp)
-
-add_executable(sensed_object src/sensed_object.cpp)
-target_link_libraries(sensed_object ${catkin_LIBRARIES})
+# add_executable(${PROJECT_NAME}_node src/ros_oop_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -198,7 +195,7 @@ target_link_libraries(sensed_object ${catkin_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_turtlebot_controller.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_ros_oop.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
