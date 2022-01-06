@@ -75,23 +75,51 @@ void updateDestination(const geometry_msgs::Pose2D::ConstPtr& msg){
 void updateCounter(const std_msgs::Int64::ConstPtr& msg){
   counter.data = msg->data;
 }
+struct Quaternion {
+    float w, x, y, z;
+};
+
+struct EulerAngles {
+    float roll, pitch, yaw;
+};
+
+EulerAngles ToEulerAngles(Quaternion q) {
+    EulerAngles angles;
+
+    // roll (x-axis rotation)
+    float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+    float cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+    angles.roll = std::atan2(sinr_cosp, cosr_cosp);
+
+    // pitch (y-axis rotation)
+    float sinp = 2 * (q.w * q.y - q.z * q.x);
+    if (std::abs(sinp) >= 1)
+        angles.pitch = std::copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+    else
+        angles.pitch = std::asin(sinp);
+
+    // yaw (z-axis rotation)
+    float siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+    float cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+    angles.yaw = std::atan2(siny_cosp, cosy_cosp);
+
+    return angles;
+}
 
 void updatePose(const nav_msgs::Odometry::ConstPtr& msg){
     current_pose.x = msg->pose.pose.position.x;
     current_pose.y = msg->pose.pose.position.y;
 
-    float qx = msg->pose.pose.orientation.x;
-    float qy = msg->pose.pose.orientation.y;
-    float qz = msg->pose.pose.orientation.z;
-    float qw = msg->pose.pose.orientation.w;
+    Quaternion q;
 
-    float t3 = 2*(qw*qz + qx*qy);
-    float t4 = 1 - 2*(qy*qy + qz*qz);
+    q.x = msg->pose.pose.orientation.x;
+    q.y = msg->pose.pose.orientation.y;
+    q.z = msg->pose.pose.orientation.z;
+    q.w = msg->pose.pose.orientation.w;
 
-    float yaw;
-    yaw = atan2(t3, t4);
+    EulerAngles robot_angles = ToEulerAngles(q);
 
-    current_pose.theta = yaw;
+    current_pose.theta = robot_angles.yaw;
     // current_pose.theta = yaw;
 
 }
