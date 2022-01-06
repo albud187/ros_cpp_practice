@@ -9,6 +9,7 @@ project(turtlebot_controller)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -135,6 +136,9 @@ include_directories(
 
 add_executable(sensed_object src/sensed_object.cpp)
 target_link_libraries(sensed_object ${catkin_LIBRARIES})
+
+add_executable(navigator src/navigator.cpp)
+target_link_libraries(navigator ${catkin_LIBRARIES})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
