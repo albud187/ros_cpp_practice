@@ -140,6 +140,13 @@ target_link_libraries(sensed_object ${catkin_LIBRARIES})
 add_executable(navigator src/navigator.cpp)
 target_link_libraries(navigator ${catkin_LIBRARIES})
 
+add_executable(destination_publisher src/destination_publisher.cpp)
+target_link_libraries(destination_publisher  ${catkin_LIBRARIES})
+
+add_executable(turtlebot_driver src/turtlebot_driver.cpp)
+target_link_libraries(turtlebot_driver ${catkin_LIBRARIES})
+
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use

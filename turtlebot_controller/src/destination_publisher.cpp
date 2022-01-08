@@ -26,7 +26,7 @@ ros::Subscriber counterSubscriber;
 
 int main (int argc, char **argv)
 {
-  ros::init(argc, argv, "target_publisher");
+  ros::init(argc, argv, "destination_publisher");
   ros::NodeHandle nh;
   destinationPub = nh.advertise<geometry_msgs::Pose2D>("/destination", 1000);
   counterPub = nh.advertise<std_msgs::Int64>("/counter", 1000);

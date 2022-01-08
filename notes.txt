@@ -5,3 +5,7 @@ cd ~/catkin_ws && catkin_make
 export TURTLEBOT3_MODEL=burger
 
 roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
+
+catkin_make --only-pkg-with-deps <target_package>
+
+catkin_make -DCATKIN_WHITELIST_PACKAGES=""

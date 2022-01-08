@@ -40,7 +40,7 @@ void get_delta_pose();
 int main (int argc, char **argv)
 {
 
-  ros::init(argc, argv, "target_listener");
+  ros::init(argc, argv, "navigator");
   ros::NodeHandle nh;
   //subsribers
   poseSub = nh.subscribe("/odom", 1000, updatePose);
@@ -48,7 +48,7 @@ int main (int argc, char **argv)
   counterSub = nh.subscribe("/counter", 1000, updateCounter);
 
   //publishers
-  deltaPosePub = nh.advertise<geometry_msgs::Pose2D>("/turtle1/delta_pose", 1000);
+  deltaPosePub = nh.advertise<geometry_msgs::Pose2D>("/delta_pose", 1000);
 
   ros::Rate rate(10);
 

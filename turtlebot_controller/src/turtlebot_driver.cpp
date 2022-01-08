@@ -14,14 +14,14 @@
 using namespace std;
 
 //global variables
-geometry_msgs::Pose2D current_pose;
 geometry_msgs::Pose2D delta_pose;
 std_msgs::Int64 counter;
 geometry_msgs::Twist Rvel;
 geometry_msgs::Twist Tvel;
+geometry_msgs::Twist Vel;
 
-float DELTA_THETA_THRESHOLD = 0.01;
-float DELTA_P_THRESHOLD = 0.07;
+float DELTA_THETA_THRESHOLD = 0.15;
+float DELTA_P_THRESHOLD = 0.1;
 
 //publishers
 ros::Publisher velPub;
@@ -40,33 +40,26 @@ bool theta_close_enough();
 bool position_close_enough();
 void rotation_control();
 void translation_control();
-
-void updatePose(const geometry_msgs::Pose2::constPtr &msg) {
-  current_pose.x = msg->x;
-  current_pose.y = msg->y;
-  current_pose.theta = msg->theta;
-}
-
-
+void move_to_destination();
 int main (int argc, char **argv)
 {
-  ros::init(argc, argv, "robot_driver");
+  ros::init(argc, argv, "turtlebot_driver");
   ros::NodeHandle nh;
 
   //subscribers
-  deltaPoseSub = nh.subscribe("turtle1/delta_pose", 1000, updatePoseDiff);
-  currentPoseSub = nh.subscribe("turtle1/pose", 1000, updatePose);
-  counterSub = nh.subscribe("/turtle1/counter", 1000, updateCounter);
+  deltaPoseSub = nh.subscribe("/delta_pose", 1000, updatePoseDiff);
+  counterSub = nh.subscribe("/counter", 1000, updateCounter);
 
   //publishers
-  velPub = nh.advertise<geometry_msgs::Twist>("/turtle1/cmd_vel", 10);
+  velPub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 10);
 
-  ros::Rate rate(20);
+  ros::Rate rate(60);
 
   while(ros::ok()){
     ros::spinOnce();
 
     if (counter.data > 0){
+      // move_to_destination();
       if (position_close_enough()==true){
         // cout<<"stationary"<<endl;
       }
@@ -84,19 +77,11 @@ int main (int argc, char **argv)
       }
 
     }else{
-      // cout<<"stationary"<<endl;
+      cout<<"stationary"<<endl;
     }
     cout<<position_close_enough()<<endl;
     cout<<delta_pose<<endl;
     rate.sleep();
-
-    // vel.linear.x = 1;
-    // vel.angular.z = 0.1;
-
-    // cout <<counter<< endl;
-    // cout <<" "<< endl;
-    // cout<<delta_pose<< endl;
-    // velPub.publish(vel);
 
   }
 
@@ -148,4 +133,36 @@ void translation_control(){
   }else{
     Tvel.linear.x = abs(sqrt(pow(delta_pose.x,2)+pow(delta_pose.y,2)));
   }
+}
+
+void move_to_destination(){
+  float THETA_TH = 0.1;
+  float DISTANCE_TH = 0.15;
+  float N = 15;
+  float target_distance = sqrt(pow(delta_pose.x,2) + pow(delta_pose.y,2));
+
+  if (target_distance > DISTANCE_TH){
+    if ( abs(delta_pose.theta) > THETA_TH && delta_pose.theta > 0){
+        Vel.linear.x = target_distance/2;
+        Vel.angular.z = -abs(delta_pose.theta)/2;
+    }
+    if (abs(delta_pose.theta) > THETA_TH && delta_pose.theta < 0 ){
+        Vel.linear.x = target_distance/2;
+        Vel.angular.z = abs(delta_pose.theta)/2;
+    }
+    velPub.publish(Vel);
+  }
+
+  else if( target_distance > DISTANCE_TH && target_distance < DISTANCE_TH*1.5){
+    if ( abs(delta_pose.theta) > THETA_TH && delta_pose.theta > 0){
+        Vel.linear.x = DISTANCE_TH/N;
+        Vel.angular.z = -abs(delta_pose.theta)/2;
+    }
+    if (abs(delta_pose.theta) > THETA_TH && delta_pose.theta < 0 ){
+        Vel.linear.x = DISTANCE_TH/N;
+        Vel.angular.z = abs(delta_pose.theta)/2;
+    }
+    velPub.publish(Vel);
+  }
+
 }
