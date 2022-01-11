@@ -1,7 +1,6 @@
 #include <ros/ros.h>
 #include <std_msgs/Int64.h>
 #include <std_srvs/SetBool.h>
-
 class NumberCounter {
     private:
     int counter;
@@ -44,4 +43,3 @@ int main (int argc, char **argv)
     ros::NodeHandle nh;
     NumberCounter nc = NumberCounter(&nh);
     ros::spin();
-}
